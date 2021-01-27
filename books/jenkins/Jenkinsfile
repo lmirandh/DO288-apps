@@ -50,7 +50,14 @@ pipeline {
 
         stage('Launch new app in DEV env') {
             steps {
-                echo '### Cleaning existing resources in DEV env ###'
+		    
+		echo '### Cleaning existing resources in DEV env ###'
+                sh '''
+                        oc project ${DEV_PROJECT}
+                        oc delete all -l app=${APP_NAME}
+                        sleep 5
+                   '''
+		echo '### Creating a new app in DEV env ###'
                 sh '''
                         oc project ${DEV_PROJECT}
 			oc new-app --name books nodejs:8~${APP_GIT_URL} \ 
@@ -58,10 +65,8 @@ pipeline {
 			--context-dir ${APP_NAME} 
 			oc expose svc/${APP_NAME} 
 			
-                   '''
-
-                echo '### Creating a new app in DEV env ###'
-                //TODO: Create a new app and expose the service
+                 '''
+               
             }
         }
 
